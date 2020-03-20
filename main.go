@@ -90,6 +90,6 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink).Methods("GET")
 	router.HandleFunc("/events", getAllEvents).Methods("GET")
-	router.HandleFunc("/", respondToChallenge).Methods("POST")
+	router.HandleFunc("/slack/event", respondToChallenge).Methods("POST")
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
