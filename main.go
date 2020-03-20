@@ -16,6 +16,16 @@ type event struct {
 	Description string `json:"Description"`
 }
 
+type challenge struct {
+	Token     string `json:"token"`
+	Challenge string `json:"challenge"`
+	Type      string `json:"type"`
+}
+
+type challengeResponse struct {
+	Challenge string `json:"challenge"`
+}
+
 type allEvents []event
 
 var events = allEvents{
@@ -54,6 +64,22 @@ func getAllEvents(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(events)
 }
 
+func respondToChallenge(w http.ResponseWriter, r *http.Request) {
+	var ch challenge
+	err := json.NewDecoder(r.Body).Decode(&ch)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	resp := challengeResponse{
+		ch.Challenge,
+	}
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(resp)
+}
+
 func main() {
 	port := os.Getenv("PORT")
 
@@ -62,7 +88,8 @@ func main() {
 	}
 
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", homeLink)
-	router.HandleFunc("/events", getAllEvents).Methods("GET") // done
+	router.HandleFunc("/", homeLink).Methods("GET")
+	router.HandleFunc("/events", getAllEvents).Methods("GET")
+	router.HandleFunc("/", respondToChallenge).Methods("POST")
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
