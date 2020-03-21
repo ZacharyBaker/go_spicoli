@@ -38,12 +38,14 @@ type response struct {
 }
 
 func handleEvent(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("handleEvent running")
 	var e Event
 	err := json.NewDecoder(r.Body).Decode(&e)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	fmt.Println(e)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("☄ HTTP status code returned!"))
