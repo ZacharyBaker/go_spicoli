@@ -74,6 +74,12 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func healthCheck(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Healthy Boy")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("☄ Healthy and happy"))
+}
+
 func main() {
 	port := os.Getenv("PORT")
 
@@ -83,5 +89,6 @@ func main() {
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/slack/event", handleEvent).Methods("POST")
+	router.HandleFunc("/health-check", healthCheck).Methods("GET")
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
