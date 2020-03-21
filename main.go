@@ -6,78 +6,70 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
 
+type item struct {
+	Channel string `json:"channel"`
+}
 type event struct {
-	ID          string `json:"ID"`
-	Title       string `json:"Title"`
-	Description string `json:"Description"`
+	Type    string `json:"type"`
+	EventTs string `json:"event_ts"`
+	User    string `json:"user"`
+	Item    item   `json:"item"`
 }
 
-type challenge struct {
+// Event comment
+type Event struct {
 	Token     string `json:"token"`
-	Challenge string `json:"challenge"`
+	TeamID    string `json:"team_id"`
+	APIAppID  string `json:"api_app_id"`
+	Event     event  `json:"event"`
 	Type      string `json:"type"`
+	EventID   string `json:"event_id"`
+	EventTime int    `json:"event_time"`
 }
 
-type challengeResponse struct {
-	Challenge string `json:"challenge"`
+type response struct {
+	text    string
+	channel string
 }
 
-type allEvents []event
-
-var events = allEvents{
-	{
-		ID:          "1",
-		Title:       "Introduction to Golang",
-		Description: "Come join us for a chance to learn how golang works and get to eventually try it out",
-	},
-	{
-		ID:          "2",
-		Title:       "Spicoli",
-		Description: "tasty waves and a cool buzz",
-	},
-	{
-		ID:          "3",
-		Title:       "Three",
-		Description: "three three threee",
-	},
-	{
-		ID:          "4",
-		Title:       "Four",
-		Description: "four four four",
-	},
-}
-
-func homeLink(w http.ResponseWriter, r *http.Request) {
-	// fmt.Fprintf(w, "Welcome home!")
-	w.Write([]byte("Chicken boy"))
-}
-
-func spicoliHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hey bud, whats your problem")
-}
-
-func getAllEvents(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(events)
-}
-
-func respondToChallenge(w http.ResponseWriter, r *http.Request) {
-	var ch challenge
-	err := json.NewDecoder(r.Body).Decode(&ch)
+func handleEvent(w http.ResponseWriter, r *http.Request) {
+	var e Event
+	err := json.NewDecoder(r.Body).Decode(&e)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	resp := challengeResponse{
-		ch.Challenge,
-	}
-	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("☄ HTTP status code returned!"))
 
-	json.NewEncoder(w).Encode(resp)
+	// send 200 response
+	// check if its the event you are looking for
+	// make a request with the headers below
+
+	if e.Type == "app_mention" {
+		url := "https://slack.com/api/chat.postMessage"
+		client := &http.Client{}
+		t := os.Getenv("REPEAT")
+		bt := "Bearer " + t
+		data := &response{"Hey bud", e.Event.Item.Channel}
+		out, err := json.Marshal(data)
+		if err != nil {
+			panic(err)
+		}
+		req, _ := http.NewRequest("POST", url, strings.NewReader(string(out)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", bt)
+
+		resp, _ := client.Do(req)
+
+		fmt.Println("RESP:::", resp)
+	}
 }
 
 func main() {
@@ -88,8 +80,6 @@ func main() {
 	}
 
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", homeLink).Methods("GET")
-	router.HandleFunc("/events", getAllEvents).Methods("GET")
-	router.HandleFunc("/slack/event", respondToChallenge).Methods("POST")
+	router.HandleFunc("/slack/event", handleEvent).Methods("POST")
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
