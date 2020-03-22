@@ -50,13 +50,13 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("☄ HTTP status code returned!"))
 
-	fmt.Println("after writing 200 status", e.Type)
+	fmt.Println("after writing 200 status")
 
 	// send 200 response
 	// check if its the event you are looking for
 	// make a request with the headers below
 
-	if e.Type == "app_mention" {
+	if e.Event.Type == "app_mention" {
 		fmt.Println("app_mention is what is happening")
 		url := "https://slack.com/api/chat.postMessage"
 		client := &http.Client{}
