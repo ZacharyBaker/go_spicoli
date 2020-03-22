@@ -57,7 +57,7 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 	if e.Type == "app_mention" {
 		url := "https://slack.com/api/chat.postMessage"
 		client := &http.Client{}
-		t := os.Getenv("REPEAT")
+		t := os.Getenv("BOT_TOKEN")
 		bt := "Bearer " + t
 		data := &response{"Hey bud", e.Event.Item.Channel}
 		out, err := json.Marshal(data)
