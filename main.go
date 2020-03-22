@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -64,15 +64,9 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 		bt := "Bearer " + t
 
 		fmt.Println("e.Event.Channel", e.Event.Channel)
-		data := &response{"Hey bud", e.Event.Channel}
 
-		out, err := json.Marshal(data)
-		if err != nil {
-			fmt.Println("we are about to panic", err)
-			panic(err)
-		}
-
-		req, _ := http.NewRequest("POST", url, strings.NewReader(string(out)))
+		var jsonStr = []byte(fmt.Sprintf(`{"text":"Hey bud.", "channel": "%s"}`, e.Event.Channel))
+		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Authorization", bt)
 
