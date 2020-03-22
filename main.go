@@ -18,7 +18,7 @@ type event struct {
 	Type    string `json:"type"`
 	EventTs string `json:"event_ts"`
 	User    string `json:"user"`
-	Item    item   `json:"item"`
+	Channel string `json:"channel"`
 }
 
 // Event comment
@@ -62,13 +62,16 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 		client := &http.Client{}
 		t := os.Getenv("BOT_TOKEN")
 		bt := "Bearer " + t
-		fmt.Println("e.Event.Item.Channel", e.Event.Item.Channel)
-		data := &response{"Hey bud", e.Event.Item.Channel}
+
+		fmt.Println("e.Event.Channel", e.Event.Channel)
+		data := &response{"Hey bud", e.Event.Channel}
+
 		out, err := json.Marshal(data)
 		if err != nil {
 			fmt.Println("we are about to panic", err)
 			panic(err)
 		}
+
 		req, _ := http.NewRequest("POST", url, strings.NewReader(string(out)))
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Authorization", bt)
