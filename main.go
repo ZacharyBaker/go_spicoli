@@ -50,7 +50,7 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("☄ HTTP status code returned!"))
 
-	fmt.Println("after writing 200 status")
+	fmt.Println("after writing 200 status", e.Type)
 
 	// send 200 response
 	// check if its the event you are looking for
