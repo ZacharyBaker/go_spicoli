@@ -62,9 +62,12 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Authorization", bt)
 
-		_, err := client.Do(req)
+		fmt.Println("REQ:::", req)
 
+		resp, err := client.Do(req)
+		fmt.Println("RESP", resp)
 		if err != nil {
+			fmt.Println("err:::", err)
 			panic(err)
 		}
 	}
