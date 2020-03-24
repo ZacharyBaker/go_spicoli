@@ -11,9 +11,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type item struct {
-	Channel string `json:"channel"`
-}
 type event struct {
 	Type    string `json:"type"`
 	Text    string `json:"text"`
@@ -33,9 +30,41 @@ type Event struct {
 	EventTime int    `json:"event_time"`
 }
 
-type response struct {
-	text    string
-	channel string
+func handleAppMention(e Event) {
+	url := "https://slack.com/api/chat.postMessage"
+	client := &http.Client{}
+
+	t := os.Getenv("BOT_TOKEN")
+	bt := "Bearer " + t
+
+	var jsonStr = []byte(fmt.Sprintf(`
+		{
+			"text":"hey bud",
+			"channel": "%s",
+			"blocks": [
+				{
+					"type": "section",
+					"text": {
+						"type": "mrkdwn",
+						"text": ":surfer: \n You know, I've been thinking..."
+					}
+				},
+				{
+					"type": "image",
+					"image_url": "https://media.giphy.com/media/yQaYsWfVTPyZW/giphy.gif",
+					"alt_text": "Spicoli Philosophizing"
+				}
+			]
+		}`, e.Event.Channel))
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", bt)
+
+	_, err := client.Do(req)
+	if err != nil {
+		fmt.Println("err:::", err)
+		panic(err)
+	}
 }
 
 func handleEvent(w http.ResponseWriter, r *http.Request) {
@@ -51,43 +80,7 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("☄ HTTP status code returned!"))
 
 	if e.Event.Type == "app_mention" {
-		fmt.Println("app_mention is what is happening", e.Event.Text)
-		url := "https://slack.com/api/chat.postMessage"
-		client := &http.Client{}
-		t := os.Getenv("BOT_TOKEN")
-		bt := "Bearer " + t
-
-		var jsonStr = []byte(fmt.Sprintf(`
-			{
-				"text":"hey bud",
-				"channel": "%s",
-				"blocks": [
-					{
-						"type": "section",
-						"text": {
-							"type": "mrkdwn",
-							"text": ":surfer: \n You know, I've been thinking..."
-						}
-					},
-					{
-						"type": "image",
-						"image_url": "https://media.giphy.com/media/yQaYsWfVTPyZW/giphy.gif",
-						"alt_text": "Spicoli Philosophizing"
-					}
-				]
-			}`, e.Event.Channel))
-		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
-		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", bt)
-
-		fmt.Println("REQ:::", req)
-
-		resp, err := client.Do(req)
-		fmt.Println("RESP", resp)
-		if err != nil {
-			fmt.Println("err:::", err)
-			panic(err)
-		}
+		handleAppMention(e)
 	}
 }
 
