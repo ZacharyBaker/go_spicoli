@@ -67,12 +67,12 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 						"text": {
 							"type": "mrkdwn",
 							"text": ":surfer: \n You know, I've been thinking..."
-						},
-						"accessory": {
-							"type": "image",
-							"image_url": "https://media.giphy.com/media/yQaYsWfVTPyZW/giphy.gif",
-							"alt_text": "Spicoli Philosophizing"
 						}
+					},
+					{
+						"type": "image",
+						"image_url": "https://media.giphy.com/media/yQaYsWfVTPyZW/giphy.gif",
+						"alt_text": "Spicoli Philosophizing"
 					}
 				]
 			}`, e.Event.Channel))
