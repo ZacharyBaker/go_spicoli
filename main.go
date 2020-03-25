@@ -54,7 +54,7 @@ func getRandomGif(t string) string {
 	fmt.Println("t", t)
 	fmt.Println("q", q)
 	// replace any spaces with "+" signs
-	q = strings.ReplaceAll(t, " ", "+")
+	q = strings.ReplaceAll(q, " ", "+")
 
 	fmt.Println("Q:::", q)
 
