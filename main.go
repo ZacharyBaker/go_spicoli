@@ -78,10 +78,15 @@ func getRandomGif(t string) string {
 	// choose one of those returned randomly
 
 	// return the url
+
+	// make sure to give proper attribution for giphy
+
+	return ""
 }
 
 func handleAppMention(e Event) {
 	gif := getRandomGif(e.Event.Text)
+	fmt.Println(gif)
 
 	url := "https://slack.com/api/chat.postMessage"
 	client := &http.Client{}
