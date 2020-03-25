@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -48,6 +49,10 @@ func getRandomGif(t string) string {
 	// replace any spaces with "+" signs
 	q := strings.ReplaceAll(t, " ", "+")
 
+	// remove "<@UVBE8EDMZ> " from string as well (including first space)
+	r := regexp.MustCompile(`<(.+)>\s+`)
+	q = r.ReplaceAllString(q, "")
+
 	fmt.Println("Q:::", q)
 
 	// make the call to the giphy api
@@ -75,6 +80,7 @@ func getRandomGif(t string) string {
 
 	fmt.Println("response from gif api :::", r)
 
+	// check how many are in the array
 	// choose one of those returned randomly
 
 	// return the url
