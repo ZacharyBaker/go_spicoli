@@ -7,9 +7,19 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
+
+type gif struct {
+	URL  string `json:"url"`
+	Slug string `json:"slug"`
+}
+
+type gifResponse struct {
+	Data []gif `json:"data"`
+}
 
 type event struct {
 	Type    string `json:"type"`
@@ -30,7 +40,49 @@ type Event struct {
 	EventTime int    `json:"event_time"`
 }
 
+func getRandomGif(t string) string {
+	// get token from heroku for the api
+	to := os.Getenv("GIF_API_TOKEN")
+
+	// change the event text to work in the api request
+	// replace any spaces with "+" signs
+	q := strings.ReplaceAll(t, " ", "+")
+
+	fmt.Println("Q:::", q)
+
+	// make the call to the giphy api
+	client := &http.Client{}
+	url := fmt.Sprintf("api.giphy.com/v1/gifs/search?api_key=%s&limit=10&q=%s", to, q)
+
+	fmt.Println("url:::", url)
+
+	req, _ := http.NewRequest("GET", url, nil)
+	resp, err := client.Do(req)
+
+	fmt.Println("resp from gif before decoding:::", resp)
+	if err != nil {
+		fmt.Println("err::: gif:::", err)
+		panic(err)
+	}
+
+	// capture the response
+	var r gifResponse
+	gerr := json.NewDecoder(resp.Body).Decode(&r)
+	if gerr != nil {
+		fmt.Println("err::: gif::: response decoding:::", err)
+		panic(err)
+	}
+
+	fmt.Println("response from gif api :::", r)
+
+	// choose one of those returned randomly
+
+	// return the url
+}
+
 func handleAppMention(e Event) {
+	gif := getRandomGif(e.Event.Text)
+
 	url := "https://slack.com/api/chat.postMessage"
 	client := &http.Client{}
 
