@@ -46,12 +46,12 @@ func getRandomGif(t string) string {
 	to := os.Getenv("GIF_API_TOKEN")
 
 	// change the event text to work in the api request
-	// replace any spaces with "+" signs
-	q := strings.ReplaceAll(t, " ", "+")
 
 	// remove "<@UVBE8EDMZ> " from string as well (including first space)
 	r := regexp.MustCompile(`<(.+)>\s+`)
-	q = r.ReplaceAllString(q, "")
+	q := r.ReplaceAllString(t, "")
+	// replace any spaces with "+" signs
+	q = strings.ReplaceAll(t, " ", "+")
 
 	fmt.Println("Q:::", q)
 
