@@ -50,6 +50,9 @@ func getRandomGif(t string) string {
 	// remove "<@UVBE8EDMZ> " from string as well (including first space)
 	r := regexp.MustCompile(`<(.+)>\s+`)
 	q := r.ReplaceAllString(t, "")
+
+	fmt.Println("t", t)
+	fmt.Println("q", q)
 	// replace any spaces with "+" signs
 	q = strings.ReplaceAll(t, " ", "+")
 
