@@ -46,30 +46,23 @@ func getRandomGif(t string) string {
 	to := os.Getenv("GIF_API_TOKEN")
 
 	// change the event text to work in the api request
-
 	// remove "<@UVBE8EDMZ> " from string as well (including first space)
 	r := regexp.MustCompile(`<(.+)>\s+`)
 	q := r.ReplaceAllString(t, "")
 
-	fmt.Println("t", t)
-	fmt.Println("q", q)
 	// replace any spaces with "+" signs
 	q = strings.ReplaceAll(q, " ", "+")
 
-	fmt.Println("Q:::", q)
-
 	// make the call to the giphy api
-	client := &http.Client{}
 	url := fmt.Sprintf("api.giphy.com/v1/gifs/search?api_key=%s&limit=10&q=%s", to, q)
 
 	fmt.Println("url:::", url)
 
-	req, _ := http.NewRequest("GET", url, nil)
-	resp, err := client.Do(req)
+	resp, err := http.Get(url)
 
 	fmt.Println("resp from gif before decoding:::", resp)
 	if err != nil {
-		fmt.Println("err::: gif:::", err)
+		fmt.Println("err::: gif::: GET request:::", err)
 		panic(err)
 	}
 
