@@ -71,14 +71,14 @@ func getRandomGif(t string) string {
 	}
 
 	// capture the response
-	var r gifResponse
-	gerr := json.NewDecoder(resp.Body).Decode(&r)
+	var gr gifResponse
+	gerr := json.NewDecoder(resp.Body).Decode(&gr)
 	if gerr != nil {
 		fmt.Println("err::: gif::: response decoding:::", err)
 		panic(err)
 	}
 
-	fmt.Println("response from gif api :::", r)
+	fmt.Println("response from gif api :::", gr)
 
 	// check how many are in the array
 	// choose one of those returned randomly
