@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -60,7 +62,6 @@ func getRandomGif(t string) string {
 
 	resp, err := http.Get(url)
 
-	fmt.Println("resp from gif before decoding:::", resp)
 	if err != nil {
 		fmt.Println("err::: gif::: GET request:::", err)
 		panic(err)
@@ -78,17 +79,24 @@ func getRandomGif(t string) string {
 
 	// check how many are in the array
 	// choose one of those returned randomly
+	fmt.Println(len(gr.Data))
+
+	l := len(gr.Data)
+
+	rand.Seed(time.Now().UnixNano())
+	min := 1
+	max := l
+	ra := rand.Intn(max-min+1) + min
 
 	// return the url
+	g := gr.Data[ra]
 
-	// make sure to give proper attribution for giphy
-
-	return ""
+	return g.URL
 }
 
 func handleAppMention(e Event) {
 	gif := getRandomGif(e.Event.Text)
-	fmt.Println(gif)
+	fmt.Println("gif", gif)
 
 	url := "https://slack.com/api/chat.postMessage"
 	client := &http.Client{}
@@ -105,16 +113,16 @@ func handleAppMention(e Event) {
 					"type": "section",
 					"text": {
 						"type": "mrkdwn",
-						"text": ":surfer: \n You know, I've been thinking..."
+						"text": ":surfer: _Powered By GIPHY_ thanks bud"
 					}
 				},
 				{
 					"type": "image",
-					"image_url": "https://media.giphy.com/media/yQaYsWfVTPyZW/giphy.gif",
+					"image_url": %s,
 					"alt_text": "Spicoli Philosophizing"
 				}
 			]
-		}`, e.Event.Channel))
+		}`, e.Event.Channel, gif))
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", bt)
