@@ -15,9 +15,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type original struct {
+	URL string `json:"url"`
+}
+
+type images struct {
+	Original original `json:"original"`
+}
+
 type gif struct {
-	URL  string `json:"url"`
-	Slug string `json:"slug"`
+	URL    string `json:"url"`
+	Slug   string `json:"slug"`
+	Images images `json:"images"`
 }
 
 type gifResponse struct {
@@ -93,7 +102,7 @@ func getRandomGif(t string) string {
 	// return the url
 	g := gr.Data[ra]
 
-	return g.URL
+	return g.Images.Original.URL
 }
 
 func handleAppMention(e Event) {
