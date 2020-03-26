@@ -54,7 +54,7 @@ func getRandomGif(t string) string {
 	q = strings.ReplaceAll(q, " ", "+")
 
 	// make the call to the giphy api
-	url := fmt.Sprintf("api.giphy.com/v1/gifs/search?api_key=%s&limit=10&q=%s", to, q)
+	url := fmt.Sprintf("http://api.giphy.com/v1/gifs/search?api_key=%s&limit=10&q=%s", to, q)
 
 	fmt.Println("url:::", url)
 
