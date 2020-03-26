@@ -84,9 +84,11 @@ func getRandomGif(t string) string {
 	l := len(gr.Data)
 
 	rand.Seed(time.Now().UnixNano())
-	min := 1
-	max := l
+	min := 0
+	max := l - 1
 	ra := rand.Intn(max-min+1) + min
+
+	fmt.Println("random number::", ra)
 
 	// return the url
 	g := gr.Data[ra]
@@ -118,7 +120,7 @@ func handleAppMention(e Event) {
 				},
 				{
 					"type": "image",
-					"image_url": %s,
+					"image_url": "%s",
 					"alt_text": "Spicoli Philosophizing"
 				}
 			]
